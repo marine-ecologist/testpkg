@@ -1,0 +1,31 @@
+---
+title: "testing leaflet map"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{testing leaflet map}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+From the tmap example:
+https://bookdown.org/nicohahn/making_maps_with_r5/docs/tmap.html#interactive-maps-with-tmap
+
+
+```{r setup}
+library(tmap)
+library(sf)
+
+sea <- st_read("https://raw.githubusercontent.com/jalehend/Sea_Data/main/seattle_dorling.geojson")
+
+tmap_mode("view")
+tm_shape(sea) + 
+  tm_polygons( size="POP", col="hinc12", n=7, style="quantile", palette="Spectral" ) 
+
+```
