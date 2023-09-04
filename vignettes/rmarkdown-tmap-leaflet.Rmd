@@ -1,0 +1,97 @@
+---
+title: "testing leaflet map"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{testing leaflet map}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## 0. tmap example with leaflet rendering 
+
+use example from tmap
+
+```{r tmap 1,}
+library(tmap)
+library(leaflet)
+
+data(World, metro)
+metro$growth <- (metro$pop2020 - metro$pop2010) / (metro$pop2010 * 10) * 100
+
+map <- 
+  tm_tiles("Esri.WorldImagery", group = "Satellite map", alpha = 0.85) +
+  tm_shape(metro, name = "Population - 2030") +
+	tm_bubbles("pop2030", col = "growth", group="Metro 2030",
+	       border.col = "black", border.alpha = .5, 
+			   style="fixed", breaks=c(-Inf, seq(0, 6, by=2), Inf),
+			   palette="-RdYlBu", contrast=1, 
+			   title.size="Metro population", 
+			   title.col="Growth rate (%)", id="name") +
+	tm_layout(legend.bg.color = "grey90", legend.bg.alpha=.5, legend.frame=TRUE) + tmap_mode("view")
+  
+```
+
+## 1. add an extra layer and show tmap
+
+Both metro bubble layers are visible
+
+```{r}
+map1 <- map + 
+ tm_shape(metro, name = "Population - 1950") +
+	tm_bubbles("pop1950", col = "growth", group="Metro 1950",
+	       border.col = "black", border.alpha = .5, 
+			   style="fixed", breaks=c(-Inf, seq(0, 6, by=2), Inf),
+			   palette="-RdYlBu", contrast=1, 
+			   title.size="Metro population", 
+			   title.col="Growth rate (%)", id="name") 
+
+map1
+
+```
+
+## 2. convert and show leaflet
+
+Use leaflet to hide the layers when first started
+
+```{r}
+
+
+lf <- tmap_leaflet(map1)
+
+lf
+```
+
+
+## 3. add layer control and hide groups
+
+reorder
+
+```{r out.width = '100%'}
+
+
+
+lf2 <- lf |> 
+  leaflet::addLayersControl(position="topleft", overlayGroups= c("Metro 1950", "Metro 2030"), options=leaflet::layersControlOptions(collapsed = FALSE)) |> 
+  leaflet::hideGroup(c("Metro 1950", "Metro 2030"))
+ 
+lf2
+```
+
+## 4. add full screen control
+
+```{r out.width = '100%'}
+
+
+
+lf3 <- lf2 |> leaflet.extras::addFullscreenControl(position="topright", pseudoFullscreen=FALSE) 
+ 
+lf3
+```
+

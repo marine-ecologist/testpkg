@@ -1,0 +1,63 @@
+---
+title: "leaflet RMarkdown"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{leaflet RMarkdown}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+I have the following `sf` file of 1000 linestrings (each with an individual id) in `"MULTILINESTRING"` format. 
+To visualise the output I've used `tmap` to make a `leaflet` to map the linestrings.  
+The output renders fine with `rmarkdown::render()`, but the map won't load when rendered with `pkgdown::build_articles()`
+
+
+Here's an example with a subset 100 lines which works with both `render()` and `build_articles()`:
+
+```{r setup}
+library(tmap)
+library(leaflet)
+library(sf)
+library(rmarkdown)
+library(tidyverse)
+
+linestringshp <- readRDS("data/particletracks189.rds") |> slice(1:100)
+
+
+tmap_mode("view") + 
+  tm_shape(linestringshp) + 
+  tm_lines()
+
+```
+
+However, I can't get the full 1k lines to run with `build_articles()` - even though `render()` works fine (see below). I don't know if this is a tmap issue or a pkgdown issue (or a poorly generated sf file), but I get the same result using leaflet as with tmap. 
+ 
+
+```{r}
+
+
+linestringshp_full <- readRDS("data/particletracks189.rds") 
+
+
+tmap_mode("view") + 
+  tm_shape(linestringshp) + 
+  tm_lines()
+
+
+
+```
+
+session info:
+
+```{r}
+
+print(sessionInfo())
+
+```
